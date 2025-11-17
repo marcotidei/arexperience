@@ -14,20 +14,23 @@
   <div id="ar-container"></div>
 
   <script>
+    // Reference THREE from MindAR bundle
+    const THREE = window.MINDAR.THREE;
+
     // Initialize MindAR
     const mindarThree = new window.MINDAR.IMAGE.MindARThree({
       container: document.querySelector("#ar-container"),
-      imageTargetSrc: "targets.mind", // your uploaded target
+      imageTargetSrc: "targets.mind", // your uploaded MindAR target
     });
 
     const {renderer, scene, camera} = mindarThree;
 
-    // Create anchor for the first target
+    // Anchor for the first target
     const anchor = mindarThree.addAnchor(0);
 
-    // Create video element (placeholder or real presenter)
+    // Video element (placeholder or your presenter)
     const video = document.createElement("video");
-    video.src = "host.webm"; // your video file
+    video.src = "host.webm"; // replace with your presenter video later
     video.autoplay = false;
     video.loop = true;
     video.muted = true;
@@ -35,7 +38,7 @@
 
     // Scale video to match 3x3 inch QR marker (~0.0762 meters)
     const physicalWidth = 0.0762; // meters
-    const height = physicalWidth * 1.78; // adjust aspect ratio for video
+    const height = physicalWidth * 1.78; // adjust aspect ratio
     const geometry = new THREE.PlaneGeometry(physicalWidth, height);
     const texture = new THREE.VideoTexture(video);
     const material = new THREE.MeshBasicMaterial({map: texture, transparent: true});
