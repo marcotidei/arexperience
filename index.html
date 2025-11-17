@@ -3,48 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <title>AR Experience</title>
-  <!-- MindAR bundle with Three.js included -->
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image-three.prod.js"></script>
-  <style>
-    body, html { margin: 0; overflow: hidden; }
-    #ar-container { width: 100%; height: 100vh; }
-  </style>
-</head>
-<body>
-  <div id="ar-container"></div>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script>
-    // Reference THREE from MindAR bundle
-    const THREE = window.MINDAR.THREE;
+  <!-- Import map for modules -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
+    }
+  }
+  </script>
 
-    // Initialize MindAR
-    const mindarThree = new window.MINDAR.IMAGE.MindARThree({
-      container: document.querySelector("#ar-container"),
-      imageTargetSrc: "targets.mind", // your uploaded MindAR target
+  <script type="module">
+    import * as THREE from 'three';
+    import { MindARThree } from 'mindar-image-three';
+
+    const container = document.querySelector("#container");
+    const startButton = document.querySelector("#startButton");
+    const stopButton = document.querySelector("#stopButton");
+
+    const mindarThree = new MindARThree({
+      container: container,
+      imageTargetSrc: "targets.mind" // your uploaded MindAR target
     });
 
     const {renderer, scene, camera} = mindarThree;
-
-    // Anchor for the first target
     const anchor = mindarThree.addAnchor(0);
 
     // Video element (placeholder or your presenter)
     const video = document.createElement("video");
-    video.src = "host.webm"; // replace with your presenter video later
+    video.src = "host.webm"; // replace with your video later
     video.autoplay = false;
     video.loop = true;
     video.muted = true;
     video.playsInline = true;
 
-    // Scale video to match 3x3 inch QR marker (~0.0762 meters)
-    const physicalWidth = 0.0762; // meters
+    // Scale video to 3x3 inch QR marker (~0.0762 m)
+    const physicalWidth = 0.0762; 
     const height = physicalWidth * 1.78; // adjust aspect ratio
     const geometry = new THREE.PlaneGeometry(physicalWidth, height);
     const texture = new THREE.VideoTexture(video);
     const material = new THREE.MeshBasicMaterial({map: texture, transparent: true});
     const plane = new THREE.Mesh(geometry, material);
-
-    // Add video plane to the anchor
     anchor.group.add(plane);
 
     // Play/pause video on target found/lost
@@ -52,10 +53,40 @@
     anchor.onTargetLost = () => { video.pause(); };
 
     // Start MindAR
-    mindarThree.start();
-    renderer.setAnimationLoop(() => {
-      renderer.render(scene, camera);
+    const start = async() => {
+      await mindarThree.start();
+      renderer.setAnimationLoop(() => { renderer.render(scene, camera); });
+    };
+
+    startButton.addEventListener("click", () => { start(); });
+    stopButton.addEventListener("click", () => {
+      mindarThree.stop();
+      renderer.setAnimationLoop(null);
+      video.pause();
     });
   </script>
+
+  <style>
+    body, html { margin: 0; overflow: hidden; }
+    #container { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+    #control {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      background: rgba(255,255,255,0.8);
+      padding: 5px;
+      border-radius: 5px;
+    }
+    button { margin: 2px; padding: 5px 10px; }
+  </style>
+</head>
+
+<body>
+  <div id="control">
+    <button id="startButton">Start</button>
+    <button id="stopButton">Stop</button>
+  </div>
+  <div id="container"></div>
 </body>
 </html>
