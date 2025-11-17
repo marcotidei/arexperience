@@ -49,15 +49,15 @@
     // Initialize MindAR
     const mindarThree = new MindARThree({
       container: container,
-      imageTargetSrc: "targets.mind" // your uploaded target
+      imageTargetSrc: "targets.mind" // your uploaded MindAR target
     });
 
     const {renderer, scene, camera} = mindarThree;
     const anchor = mindarThree.addAnchor(0);
 
-    // Video element (placeholder or real presenter)
+    // Video element
     const video = document.createElement("video");
-    video.src = "host.webm"; // replace with your video later
+    video.src = "host.webm"; // placeholder presenter video
     video.autoplay = false;
     video.loop = true;
     video.muted = true;
@@ -65,7 +65,7 @@
 
     // Scale video to 3x3 inch QR (~0.0762 m)
     const physicalWidth = 0.0762;
-    const height = physicalWidth * 1.78; // adjust aspect ratio
+    const height = physicalWidth * 1.78;
     const geometry = new THREE.PlaneGeometry(physicalWidth, height);
     const texture = new THREE.VideoTexture(video);
     const material = new THREE.MeshBasicMaterial({map: texture, transparent: true});
@@ -76,14 +76,12 @@
     anchor.onTargetFound = () => { video.play(); };
     anchor.onTargetLost = () => { video.pause(); };
 
-    // Start MindAR on button click
+    // Start AR
     startButton.addEventListener("click", async () => {
       try {
         await mindarThree.start();
-        video.play(); // ensure video plays
-        renderer.setAnimationLoop(() => {
-          renderer.render(scene, camera);
-        });
+        video.play();
+        renderer.setAnimationLoop(() => { renderer.render(scene, camera); });
       } catch(e) {
         console.error("AR start failed:", e);
       }
