@@ -58,7 +58,15 @@
       renderer.setAnimationLoop(() => { renderer.render(scene, camera); });
     };
 
-    startButton.addEventListener("click", () => { start(); });
+    startButton.addEventListener("click", async () => {
+      try {
+        await mindarThree.start();
+        video.play(); // ensure video starts
+        renderer.setAnimationLoop(() => { renderer.render(scene, camera); });
+      } catch(e) {
+        console.error("AR start failed:", e);
+      }
+    });
     stopButton.addEventListener("click", () => {
       mindarThree.stop();
       renderer.setAnimationLoop(null);
