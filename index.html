@@ -9,13 +9,14 @@
 	<a-scene mindar-image="imageTargetSrc: ./targets.mind;">
 		<a-assets>
 		  <img id="card" src="./ar_qrcode.png" />
-		  <video id="hostVideo"
-		         src="./host.webm"
-		         loop="true"
-		         autoplay="true"
-		         playsinline
-		         webkit-playsinline>
-		  </video>
+		<video id="hostVideo"
+		       src="./host.webm"
+		       loop
+		       autoplay
+		       muted
+		       playsinline
+		       webkit-playsinline>
+		</video>
 		</a-assets>
 	
 	  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
