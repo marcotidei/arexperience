@@ -1,99 +1,21 @@
-<!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <title>AR Experience</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    https://aframe.io/releases/1.6.0/aframe.min.js
+    https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js</script>
+  </head>
+  <body>
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB"
+             renderer="colorManagement: true, physicallyCorrectLights"
+             vr-mode-ui="enabled: false"
+             device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <!-- Replace with your own image and model if needed -->
+        <img id="card" src="./your-image.pngl.gltf</a-asset-item>
+      </a-assets>
 
-  <!-- Import map for ES Modules -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
-      "mindar-image-three": "https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-three.prod.js"
-    }
-  }
-  </script>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-  <style>
-    body, html { margin: 0; overflow: hidden; }
-    #container { width: 100vw; height: 100vh; position: relative; }
-    #control {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      z-index: 2;
-      background: rgba(255,255,255,0.8);
-      padding: 5px;
-      border-radius: 5px;
-    }
-    button { margin: 2px; padding: 5px 10px; }
-  </style>
-</head>
-
-<body>
-  <div id="control">
-    <button id="startButton">Start</button>
-    <button id="stopButton">Stop</button>
-  </div>
-  <div id="container"></div>
-
-  <script type="module">
-    import * as THREE from 'three';
-    import { MindARThree } from 'mindar-image-three';
-
-    const container = document.querySelector("#container");
-    const startButton = document.querySelector("#startButton");
-    const stopButton = document.querySelector("#stopButton");
-
-    // Initialize MindAR
-    const mindarThree = new MindARThree({
-      container: container,
-      imageTargetSrc: "targets.mind" // your uploaded MindAR target
-    });
-
-    const {renderer, scene, camera} = mindarThree;
-    const anchor = mindarThree.addAnchor(0);
-
-    // Video element
-    const video = document.createElement("video");
-    video.src = "host.webm"; // placeholder presenter video
-    video.autoplay = false;
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true;
-
-    // Scale video to 3x3 inch QR (~0.0762 m)
-    const physicalWidth = 0.0762;
-    const height = physicalWidth * 1.78;
-    const geometry = new THREE.PlaneGeometry(physicalWidth, height);
-    const texture = new THREE.VideoTexture(video);
-    const material = new THREE.MeshBasicMaterial({map: texture, transparent: true});
-    const plane = new THREE.Mesh(geometry, material);
-    anchor.group.add(plane);
-
-    // Play/pause video on target found/lost
-    anchor.onTargetFound = () => { video.play(); };
-    anchor.onTargetLost = () => { video.pause(); };
-
-    // Start AR
-    startButton.addEventListener("click", async () => {
-      try {
-        await mindarThree.start();
-        video.play();
-        renderer.setAnimationLoop(() => { renderer.render(scene, camera); });
-      } catch(e) {
-        console.error("AR start failed:", e);
-      }
-    });
-
-    // Stop AR
-    stopButton.addEventListener("click", () => {
-      mindarThree.stop();
-      renderer.setAnimationLoop(null);
-      video.pause();
-    });
-  </script>
-</body>
-</html>
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-plane src="#card" position="0 0 0" rotation="0 0 0" position="0 0 0.1" scale="0.005 0.005 0.005" src="#avatarModel"
